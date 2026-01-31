@@ -129,16 +129,16 @@ function sendExampleMessage(text: string) {
               Help me create a social media post
             </button>
             <button 
-              @click="sendExampleMessage('How does the AI post generator work?')" 
+              @click="sendExampleMessage('How is \'Social Media Post Generator\' built?')" 
               class="block w-full dark:bg-gray-700 bg-gray-600 dark:text-inherit text-white py-2 px-4 rounded dark:hover:bg-gray-900 hover:bg-gray-700 transition-colors"
             >
-              How does the AI post generator work?
+              How is 'Social Media Post Generator' built?
             </button>
             <button 
-              @click="sendExampleMessage('What types of posts can you generate?')" 
+              @click="sendExampleMessage('Can I import posts from a URL?')" 
               class="block w-full dark:bg-gray-700 bg-gray-600 dark:text-inherit text-white py-2 px-4 rounded dark:hover:bg-gray-900 hover:bg-gray-700 transition-colors"
             >
-              What types of posts can you generate?
+              Can I import posts from a URL?
             </button>
           </div>
         </div>
