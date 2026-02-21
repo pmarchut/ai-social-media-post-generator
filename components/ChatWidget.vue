@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nanoid } from "nanoid";
+import { useChatAi } from "~~/composables/useChatAi";
 import type { Message, User } from "~~/types";
 
 const me = ref<User>({
@@ -19,32 +19,30 @@ const messages = useSessionStorage<Message[]>('messages', []);
 
 const usersTyping = ref<User[]>([]);
 
-// send messages to Chat API here
+const messagesForAPI = computed(() => 
+  messages.value.map((m) => ({
+    role: m.userId,
+    content: m.text,
+  }))
+);
 
+// send messages to Chat API here
+const { chat } = useChatAi({ agent: 'customerSupport' });
 async function handleNewMessage(message: Message) {
   messages.value.push(message);
   usersTyping.value.push(bot.value);
-  try {
-    const response = await fetchWithTimeout("/api/ai", {
-      method: "POST",
-      body: {
-        message: message.text,
-      },
-    });
-    messages.value.push({
-      id: nanoid(),
-      createdAt: new Date(),
-      text: response.content ?? "There was a problem and I could not come up with a response.",
-      userId: "assistant",
-    });
-  } catch (err) {
-    messages.value.push({
-      id: nanoid(),
-      createdAt: new Date(),
-      text: "There was a problem and I could not come up with a response.",
-      userId: "assistant",
-    });
+  
+  const res = await chat({ messages: messagesForAPI.value });
+
+  if (!res || !res.choices[0].message.content) return;
+
+  const msg = {
+    id: res.id,
+    userId: bot.value.id,
+    createdAt: new Date(),
+    text: res.choices[0].message.content,
   }
+  messages.value.push(msg);
   usersTyping.value.splice(usersTyping.value.indexOf(bot.value));
 }
 </script>

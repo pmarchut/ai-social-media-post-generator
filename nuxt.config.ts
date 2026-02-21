@@ -10,7 +10,6 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    SESSION_PASSWORD: "",
     HF_API_KEY: "",
   },
   ssr: false,
