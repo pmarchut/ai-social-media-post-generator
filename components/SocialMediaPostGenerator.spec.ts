@@ -6,6 +6,7 @@ import SocialMediaPostGenerator from './SocialMediaPostGenerator.vue'
 // --- MOCK useChatAi ---
 const twitterChatMock = vi.fn()
 const facebookChatMock = vi.fn()
+const fetchMock = vi.fn()
 
 const twitterFirstMessage = ref<any>(undefined)
 const facebookFirstMessage = ref<any>(undefined)
@@ -24,6 +25,21 @@ vi.mock('../composables/useChatAi', () => ({
 describe('SocialMediaPostGenerator', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    fetchMock.mockImplementation((url: string) => {
+      if (url === '/api/image') {
+        return Promise.resolve('mock-image-url')
+      }
+
+      if (url === '/api/scrape') {
+        return Promise.resolve({ title: 'Mock scraped title' })
+      }
+
+      return Promise.resolve({})
+    })
+
+    // mock global $fetch
+    globalThis.$fetch = fetchMock as any
   })
 
   function mountComponent() {
@@ -45,6 +61,11 @@ describe('SocialMediaPostGenerator', () => {
             name: 'FacebookCard',
             template: `<div />`,
             props: ['initialPost', 'isLoading'],
+          },
+          ImagesCard: {
+            name: 'ImagesCard',
+            template: `<div />`,
+            props: ['gradients', 'bgImage', 'title', 'isLoading'],
           },
         },
       },
@@ -161,5 +182,29 @@ describe('SocialMediaPostGenerator', () => {
 
     expect(twitterCard.props('isLoading')).toBe(false)
     expect(facebookCard.props('isLoading')).toBe(false)
+  })
+
+  it('sets generated image and title from API', async () => {
+    twitterChatMock.mockResolvedValue({
+      choices: [{ message: { content: 'Tweet' } }],
+    })
+
+    facebookChatMock.mockResolvedValue({
+      choices: [{ message: { content: 'Facebook' } }],
+    })
+
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent({ name: 'ImportUrlForm' }).vm.$emit('submit', {
+      url: 'https://example.com',
+      temperature: 0.5,
+    })
+
+    await flushPromises()
+
+    const imagesCard = wrapper.findComponent({ name: 'ImagesCard' })
+
+    expect(imagesCard.props('bgImage')).toBe('mock-image-url')
+    expect(imagesCard.props('title')).toBe('Mock scraped title')
   })
 })

@@ -1,12 +1,24 @@
 <script setup lang="ts">
 import { useChatAi } from "../composables/useChatAi";
+import ImagesCard from "./ImagesCard.vue";
 
 const url = ref('');
 const temperature = ref(0.5);
 const generatedTweet = ref('');
 const generatedFacebook = ref('');
+const generatedImage = ref('');
+const scrapedTitle = ref('');
 const isGeneratingTwitter = ref(false);
 const isGeneratingFacebook = ref(false);
+const isGeneratingImage = ref(false);
+
+// simple gradients array for placeholder images
+const gradients = [
+  { from: '#01d293', to: '#00a5ff' },
+  { from: '#ff5f6d', to: '#ffc371' },
+  { from: '#a1c4fd', to: '#c2e9fb' },
+  { from: '#ff9a9e', to: '#fad0c4' },
+];
 
 const twitterAi = useChatAi({ agent: 'twitter' });
 const facebookAi = useChatAi({ agent: 'facebook' });
@@ -16,13 +28,24 @@ const handleFormSubmit = async (payload: { url: string; temperature: number }) =
   temperature.value = payload.temperature;
   generatedTweet.value = '';
   generatedFacebook.value = '';
+  generatedImage.value = '';
+  scrapedTitle.value = '';
   isGeneratingTwitter.value = true;
   isGeneratingFacebook.value = true;
+  isGeneratingImage.value = true;
 
   const twitterPromise = twitterAi.chat({ url: payload.url, temperature: payload.temperature });
   const facebookPromise = facebookAi.chat({ url: payload.url, temperature: payload.temperature });
+  const imagePromise = $fetch('/api/image', {
+    method: 'POST',
+    body: { url: payload.url, temperature: payload.temperature },
+  });
+  const scrapePromise = $fetch('/api/scrape', {
+    method: 'POST',
+    body: { url: payload.url },
+  });
 
-  const [tRes, fRes] = await Promise.allSettled([twitterPromise, facebookPromise]);
+  const [tRes, fRes, imgRes, scrapeRes] = await Promise.allSettled([twitterPromise, facebookPromise, imagePromise, scrapePromise]);
 
   if (tRes.status === 'fulfilled' && tRes.value) {
     const text = tRes.value?.choices?.[0]?.message?.content;
@@ -38,8 +61,17 @@ const handleFormSubmit = async (payload: { url: string; temperature: number }) =
     generatedFacebook.value = facebookAi.firstMessage.value.content;
   }
 
+  if (imgRes.status === 'fulfilled' && imgRes.value) {
+    generatedImage.value = imgRes.value;
+  }
+
+  if (scrapeRes.status === 'fulfilled' && scrapeRes.value) {
+    scrapedTitle.value = scrapeRes.value.title;
+  }
+
   isGeneratingTwitter.value = false;
   isGeneratingFacebook.value = false;
+  isGeneratingImage.value = false;
 };
 </script>
 
@@ -52,7 +84,9 @@ const handleFormSubmit = async (payload: { url: string; temperature: number }) =
     <div class="grid grid-cols-1 gap-6 mt-8">
       <TwitterCard :initialTweet="generatedTweet" :isLoading="isGeneratingTwitter" />
       <FacebookCard :initialPost="generatedFacebook" :isLoading="isGeneratingFacebook" />
+
       <!-- Images Card Here -->
+      <ImagesCard :gradients="gradients" :bgImage="generatedImage" :title="scrapedTitle" :isLoading="isGeneratingImage" />
     </div>
   </div>
 </template>

@@ -11,6 +11,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     HF_API_KEY: "",
+    CF_ACCOUNT_ID: "",
+    CF_API_TOKEN: "",
   },
   ssr: false,
 });
