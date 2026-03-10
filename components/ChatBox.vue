@@ -86,13 +86,15 @@ function sendExampleMessage(text: string) {
     <button 
       v-show="!isOpen"
       class="bg-blue-500 p-3 rounded"
+      data-test="chat-widget-trigger"
       @click="isOpen = true"
     >
       <IconChat class="w-8 h-8 text-white" />
     </button>
 
     <div
-      v-if="isOpen" 
+      v-if="isOpen"
+      data-test="chat-widget-content"
       class="box bg-gray-300 dark:bg-gray-800 w-[450px]"
     >
       <header class="bg-gray-200 dark:bg-gray-900 px-4 flex justify-between items-center">
@@ -170,6 +172,7 @@ function sendExampleMessage(text: string) {
           @keypress.enter.exact.prevent="sendMessage"
           placeholder="Type your message"
           class="input w-full block"
+          data-test="chat-input"
         />
       </footer>
     </div>

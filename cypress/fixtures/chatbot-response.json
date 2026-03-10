@@ -1,0 +1,33 @@
+{
+    "id": "chatcmpl-14ee7cd7-11f4-4e53-97f5-adbd17e3408a",
+    "object": "chat.completion",
+    "created": 1773160104,
+    "model": "moonshotai/kimi-k2-instruct-0905",
+    "choices": [
+        {
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": "Hi! I’m here to help with the Social Media Post Generator. If you need assistance using the app or have questions about creating social-media posts from articles, let me know how I can help!"
+            },
+            "logprobs": null,
+            "finish_reason": "stop"
+        }
+    ],
+    "usage": {
+        "queue_time": 0.071852714,
+        "prompt_tokens": 440,
+        "prompt_time": 0.133122482,
+        "completion_tokens": 41,
+        "completion_time": 0.122112072,
+        "total_tokens": 481,
+        "total_time": 0.255234554
+    },
+    "usage_breakdown": null,
+    "system_fingerprint": "fp_241bc7119c",
+    "x_groq": {
+        "id": "req_01kkc9807zecx8740ttjsm0yz9",
+        "seed": 117590901
+    },
+    "service_tier": "on_demand"
+}

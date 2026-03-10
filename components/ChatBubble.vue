@@ -13,7 +13,7 @@ const relativeTime = useTimeAgo(() => props.message?.createdAt ?? new Date())
 </script>
 
 <template>
-  <div class="chat" :class="{ 'chat-end': isMine, 'chat-start': !isMine }">
+  <div class="chat" :class="{ 'chat-end': isMine, 'chat-start': !isMine }" data-test="chat-bubble">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
         <img :src="user?.avatar" />
@@ -31,6 +31,7 @@ const relativeTime = useTimeAgo(() => props.message?.createdAt ?? new Date())
       :class="{
         'dark:bg-gray-700 bg-gray-600 dark:text-inherit text-white': isMine,
       }"
+      data-test="chat-bubble-text"
     >
       <Markdown v-if="message" :source="message.text" class="w-full" />
       <slot v-else></slot>
