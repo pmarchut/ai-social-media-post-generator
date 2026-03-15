@@ -1,4 +1,6 @@
-# Nuxt 3 Minimal Starter
+# ai-social-media-post-generator
+
+Site: https://delicate-frangollo-c3c620.netlify.app
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
