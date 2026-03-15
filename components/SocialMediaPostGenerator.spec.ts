@@ -3,6 +3,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import SocialMediaPostGenerator from './SocialMediaPostGenerator.vue'
 
+vi.stubGlobal('useRoute', () => ({
+  query: {}
+}))
+
+vi.stubGlobal('useIsChromeExtension', () => false)
+
 // --- MOCK useChatAi ---
 const twitterChatMock = vi.fn()
 const facebookChatMock = vi.fn()

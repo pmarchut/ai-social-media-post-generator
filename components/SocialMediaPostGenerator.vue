@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useIsChromeExtension } from "../composables/useIsChromeExtension";
 import { useChatAi } from "../composables/useChatAi";
 import ImagesCard from "./ImagesCard.vue";
 
-const url = ref('');
-const temperature = ref(0.5);
+const route = useRoute();
+const hideForm = useIsChromeExtension();
+
+const url = ref(route.query.url || '');
 const generatedTweet = ref('');
 const generatedFacebook = ref('');
 const generatedImage = ref('');
@@ -23,9 +26,14 @@ const gradients = [
 const twitterAi = useChatAi({ agent: 'twitter' });
 const facebookAi = useChatAi({ agent: 'facebook' });
 
+onMounted(() => {
+  if (url.value) {
+    handleFormSubmit({ url: String(url.value), temperature: 1 })
+  }
+});
+
 const handleFormSubmit = async (payload: { url: string; temperature: number }) => {
   url.value = payload.url;
-  temperature.value = payload.temperature;
   generatedTweet.value = '';
   generatedFacebook.value = '';
   generatedImage.value = '';
@@ -76,16 +84,14 @@ const handleFormSubmit = async (payload: { url: string; temperature: number }) =
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-4xl my-10">Social Media Post Generator</h1>
+  <div class="container mx-auto px-4 pb-8">
+    <h1 class="text-4xl my-8">Social Media Post Generator</h1>
     
-    <ImportUrlForm :url="url" :temperature="temperature" @submit="handleFormSubmit" />
+    <ImportUrlForm v-if="!hideForm" @submit="handleFormSubmit" />
 
     <div class="grid grid-cols-1 gap-6 mt-8">
       <TwitterCard :initialTweet="generatedTweet" :isLoading="isGeneratingTwitter" />
       <FacebookCard :initialPost="generatedFacebook" :isLoading="isGeneratingFacebook" />
-
-      <!-- Images Card Here -->
       <ImagesCard :gradients="gradients" :bgImage="generatedImage" :title="scrapedTitle" :isLoading="isGeneratingImage" />
     </div>
   </div>
